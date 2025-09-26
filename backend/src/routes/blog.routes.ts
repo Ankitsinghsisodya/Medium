@@ -1,10 +1,15 @@
-import { Hono } from "hono";
-import { createPost, getPost, updatePost } from "../controller/blog.controller";
+import { Hono, Next } from "hono";
+import { createPost, getAllPost, getPost, updatePost } from "../controller/blog.controller";
+import { Context } from "hono";
+import { authMiddleware } from "../middleware/auth.middleware";
 
-const blog = new Hono();
+const blogRouter = new Hono();
 
-blog.post('/blog', createPost);  // createpost
-blog.put('/blog', updatePost); // update
-blog.get('/blog:id', getPost); // getpost
+blogRouter.use("/*", authMiddleware);
 
-export default blog;
+blogRouter.post("/blog", createPost); // createpost
+blogRouter.put("/blog", updatePost); // update
+blogRouter.get("/blog/:id", getPost); // getpost
+blogRouter.get("/blog", getAllPost); // getpost
+
+export default blogRouter;
