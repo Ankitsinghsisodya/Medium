@@ -7,6 +7,7 @@ import {
 
 export const createPost = async (c: Context) => {
   try {
+
     const body = await c.req.json();
     const prisma = getPrisma(c.env.DATABASE_URL);
     if (!createBlogInput.safeParse(body).success)

@@ -6,7 +6,7 @@ export const signIn = async (c: Context) => {
   try {
     const prisma = getPrisma(c.env.DATABASE_URL);
     const body = await c.req.json();
-    if (!signInInput.safeParse(body).success)
+    if (!signInInput.safeParse(body))
       return c.json({
         message: "input have some issue",
       });
@@ -37,21 +37,26 @@ export const signIn = async (c: Context) => {
   }
 };
 
+
 export const signUp = async (c: Context) => {
   try {
-    const Prisma = getPrisma(c.env.DATABASE_URL);
-
+    const prisma = getPrisma(c.env.DATABASE_URL);
     const body = await c.req.json();
-    if (!signupInput.safeParse(body).success)
+
+    // Properly handle Zod validation
+    const validation = signupInput.safeParse(body);
+    if (!validation.success) {
       return c.json({
-        message: "input are not correct",
-      });
-      console.log('body', body);
-    const user = await Prisma.user.create({
+        message: validation.error
+      }, 400);
+    }
+
+    // Use the validated data
+    const user = await prisma.user.create({
       data: {
-        email: body.email,
-        password: body.password,
-        name: body.name,
+        email: validation.data.email,
+        password: validation.data.password,
+        name: validation.data.name || null, // Handle optional name field
       },
     });
 
@@ -60,9 +65,9 @@ export const signUp = async (c: Context) => {
       jwt: token,
     });
   } catch (error) {
-    c.status(500);
+    console.error('Signup error:', error);
     return c.json({
-      error,
-    });
+      error: "Internal server error"
+    }, 500);
   }
 };
