@@ -1,17 +1,21 @@
-import { withAccelerate } from "@prisma/extension-accelerate";
-import { decode, sign, verify } from "hono/jwt";
+import { sign } from "hono/jwt";
 import { Context } from "hono";
-import { PrismaClient } from "../generated/prisma";
 import { getPrisma } from "../lib/prismaFunction";
+import { signInInput, signupInput } from "@ankitsingsisodya/medium-blog";
 export const signIn = async (c: Context) => {
   try {
     const prisma = getPrisma(c.env.DATABASE_URL);
     const body = await c.req.json();
+    if (!signInInput.safeParse(body).success)
+      return c.json({
+        message: "input have some issue",
+      });
     const { email, password } = body;
+
     const user = await prisma.user.findUnique({
       where: {
         email: email,
-        password: password
+        password: password,
       },
     });
     if (!user) {
@@ -23,9 +27,8 @@ export const signIn = async (c: Context) => {
 
     const jwt = await sign({ id: user.id }, c.env.JWT_SECRET);
     return c.json({
-      jwt
-    })
-
+      jwt,
+    });
   } catch (error) {
     c.status(500);
     return c.json({
@@ -39,11 +42,16 @@ export const signUp = async (c: Context) => {
     const Prisma = getPrisma(c.env.DATABASE_URL);
 
     const body = await c.req.json();
-
+    if (!signupInput.safeParse(body).success)
+      return c.json({
+        message: "input are not correct",
+      });
+      console.log('body', body);
     const user = await Prisma.user.create({
       data: {
         email: body.email,
         password: body.password,
+        name: body.name,
       },
     });
 
