@@ -16,16 +16,17 @@ export const useBlog = ({ id }: { id: string }) => {
   const [blog, setBlog] = useState<Blog>();
 
   useEffect(() => {
-    axios
-      .get(`${BACKEND_URL}/api/v1/blog/${id}`, {
+    const fetchblog = async () => {
+      const response = await axios.get(`${BACKEND_URL}/api/v1/blog/blog/${id}`, {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      })
-      .then((response) => {
-        setBlog(response.data.blog);
-        setLoading(false);
       });
+
+      setBlog(response?.data?.blog);
+      setLoading(false);
+    };
+    fetchblog();
   }, [id]);
 
   return {
