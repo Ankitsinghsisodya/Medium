@@ -1,4 +1,4 @@
-# Medium Clone
+# Medium 
 
 A full-stack blogging platform built with modern web technologies. This project includes both frontend and backend implementations with proper authentication and blog management features.
 
