@@ -17,7 +17,7 @@ const app = new Hono<{
 
 app.use(
   cors({
-    origin: ["https://medium-seven-weld.vercel.app"], // Changed from "*" to specific frontend URL
+    origin: ["https://medium-seven-weld.vercel.app", "http://localhost:5173/signup"], // Changed from "*" to specific frontend URL
     allowMethods: ['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
     exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],

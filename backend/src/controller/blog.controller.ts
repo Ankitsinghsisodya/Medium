@@ -79,7 +79,18 @@ export const getAllPost = async (c: Context) => {
   try {
     const prisma = getPrisma(c.env.DATABASE_URL);
 
-    const blog = await prisma.post.findMany();
+    const blog = await prisma.post.findMany({
+      select:{
+        title: true,
+        content: true, 
+        id: true,
+        author:{
+          select:{
+           name : true
+          }
+        }
+      }
+    });
     return c.json({ blog });
   } catch (error) {
     c.status(500);
